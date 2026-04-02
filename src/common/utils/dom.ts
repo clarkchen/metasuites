@@ -125,3 +125,74 @@ export const waitForJQueryElement = (
     $(element as HTMLElement)
   )
 }
+
+/**
+ * Wait for the DOM to stop mutating for `ms` milliseconds.
+ * Useful for ensuring a SPA framework has finished all render cycles before injecting.
+ */
+export const waitForDomStable = (ms = 300): Promise<void> =>
+  new Promise(resolve => {
+    let timer = setTimeout(() => {
+      observer.disconnect()
+      resolve()
+    }, ms)
+
+    const observer = new MutationObserver(() => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        observer.disconnect()
+        resolve()
+      }, ms)
+    })
+
+    if (!document.body) {
+      resolve()
+      return
+    }
+    observer.observe(document.body, { childList: true, subtree: true })
+  })
+
+/**
+ * Wait for a CSS selector to appear or disappear using MutationObserver.
+ * @param selector - CSS selector to watch
+ * @param options.hidden   - wait until element is gone (default: false = wait until present)
+ * @param options.timeout  - give up after N ms and resolve(false); 0 = wait forever (default)
+ * @returns true if condition met, false if timed out
+ */
+export const waitForSelector = (
+  selector: string,
+  options: { hidden?: boolean; timeout?: number } = {}
+): Promise<boolean> => {
+  const { hidden = false, timeout = 0 } = options
+  const isReady = () =>
+    hidden
+      ? !document.querySelector(selector)
+      : !!document.querySelector(selector)
+
+  if (isReady()) return Promise.resolve(true)
+
+  return new Promise(resolve => {
+    let timer: ReturnType<typeof setTimeout> | null = null
+
+    const observer = new MutationObserver(() => {
+      if (isReady()) {
+        if (timer) clearTimeout(timer)
+        observer.disconnect()
+        resolve(true)
+      }
+    })
+
+    if (timeout > 0) {
+      timer = setTimeout(() => {
+        observer.disconnect()
+        resolve(false)
+      }, timeout)
+    }
+
+    if (!document.body) {
+      resolve(false)
+      return
+    }
+    observer.observe(document.body, { childList: true, subtree: true })
+  })
+}

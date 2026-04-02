@@ -58,7 +58,6 @@ export default defineManifest((env: ConfigEnv) => {
               '*://*.tronscan.org/*',
               '*://scan.merlinchain.io/*',
               '*://solscan.io/*',
-              '*://*.solana.fm/*',
               '*://*.metasleuth.io/*',
               '*://explorer.solana.com/*',
               '*://debank.com/*',
@@ -78,6 +77,11 @@ export default defineManifest((env: ConfigEnv) => {
       {
         matches: ['<all_urls>'],
         resources: ['src/assets/images/*.png', 'src/assets/js/*.js']
+      },
+      {
+        matches: ['<all_urls>'],
+        resources: ['bundle/*.js', 'bundle/*.css'],
+        use_dynamic_url: true
       }
     ],
     action: {

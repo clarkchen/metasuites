@@ -1,3 +1,10 @@
+### v5.11.0
+
+- [fix] Fix explorer.solana.com compatibility
+- [fix] Fix race condition between background webRequest and content script initialization
+- [perf] Load content scripts on demand to avoid injecting CSS on unsupported sites
+- [update] Remove support for deprecated websites that are no longer active
+
 ### v5.10.0
 
 - [feat] Adapt to MegaETH Explorer

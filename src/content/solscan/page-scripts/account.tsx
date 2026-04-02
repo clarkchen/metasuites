@@ -9,12 +9,13 @@ import {
   renderEnhancedLabels,
   renderTransactionHashPhalconLink
 } from '../feat-scripts'
-import { lazyLoad, trigger } from '../helper'
+import { lazyLoad, trigger, announceReady, createAccountBox } from '../helper'
 
 const initAccountPageScript = async () => {
   const { fundFlow, enhancedLabels, quick2Parsers } = await store.get('options')
 
   lazyLoad(() => {
+    if (fundFlow || enhancedLabels) createAccountBox()
     if (fundFlow) renderFundFlowButton(SOLSCAN_PAGES.ACCOUNT.name)
     if (enhancedLabels) {
       renderMainAddressLabel()
@@ -31,14 +32,23 @@ const initAccountPageScript = async () => {
     false
   )
 
+  const handleTabData = () => {
+    requestIdleCallback(() => {
+      if (enhancedLabels) renderEnhancedLabels()
+      if (quick2Parsers) renderTransactionHashPhalconLink()
+    })
+  }
+
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message === GET_SOLSCAN_ACCOUNT_TAB_DATA) {
-      requestIdleCallback(() => {
-        if (enhancedLabels) renderEnhancedLabels()
-        if (quick2Parsers) renderTransactionHashPhalconLink()
-      })
+      handleTabData()
       sendResponse()
     }
+  })
+
+  const missed = await announceReady()
+  missed.forEach(m => {
+    if (m === GET_SOLSCAN_ACCOUNT_TAB_DATA) handleTabData()
   })
 }
 

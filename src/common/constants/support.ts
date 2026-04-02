@@ -403,13 +403,6 @@ export const EXT_SUPPORT_WEB_LIST: ExtSupportWebsite[] = [
     logo: 'https://assets.blocksec.com/image/1716447208502-2.svg'
   },
   {
-    name: 'SolanaFM',
-    chain: 'solana',
-    domains: ['solana.fm'],
-    siteName: 'SOLANAFM',
-    logo: 'https://assets.blocksec.com/image/1716447208502-2.svg'
-  },
-  {
     name: 'Solana Explorer',
     chain: 'solana',
     domains: ['explorer.solana.com'],
@@ -427,12 +420,6 @@ export const EXT_SUPPORT_WEB_LIST: ExtSupportWebsite[] = [
     domains: ['intel.arkm.com'],
     siteName: 'ARKHAM',
     logo: 'https://assets.blocksec.com/image/1716165286476-2.svg'
-  },
-  {
-    name: 'DEX Screener',
-    domains: ['dexscreener.com'],
-    siteName: 'DEX',
-    logo: 'https://assets.blocksec.com/image/1716165286476-4.svg'
   },
   {
     name: 'MegaETH',

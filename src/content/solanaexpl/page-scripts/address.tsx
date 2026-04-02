@@ -12,13 +12,9 @@ import {
 const createAccountBox = () => {
   if ($('#md-account-box').length) return Promise.reject()
   const container = $(
-    'body > div.main-content > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(1) > h3'
+    'div.main-content > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(1) > h3'
   )
-  const mainAddress = $(
-    'body > div.main-content > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2) > table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > div:nth-of-type(1) > span:nth-of-type(2)'
-  )
-    .text()
-    .trim()
+  const mainAddress = $('span[data-address]').attr('data-address') ?? ''
   const hasRefreshBtn = container.siblings('button').length > 0
   const accountBox = $(
     `<div id="md-account-box" class="md-flex items-center flex-wrap" style="gap: 16px;margin-right: ${
@@ -34,9 +30,7 @@ const initAddressPageScript = async () => {
   lazyLoad(() => {
     createAccountBox().then(() => {
       if (fundFlow) renderFundFlowButton()
-      if (enhancedLabels) {
-        renderMainAddressLabel()
-      }
+      if (enhancedLabels) renderMainAddressLabel()
     })
     if (quick2Parsers) renderTransactionHashPhalconLink()
   }, 'span[class*="spinner"]:not(td >*)')

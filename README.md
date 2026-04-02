@@ -45,7 +45,6 @@ For up to the minute news, follow our [Twitter](https://twitter.com/MetaDockTeam
 - etherscan.io
 - bscscan.com
 - polygonscan.com
-- ftmscan.com
 - arbiscan.io
 - cronoscan.com
 - moonscan.io
@@ -66,7 +65,6 @@ For up to the minute news, follow our [Twitter](https://twitter.com/MetaDockTeam
 - scan.merlinchain.io
 - monadscan.com
 - solscan.io
-- solana.fm
 - explorer.solana.com
 
 ## Contributing

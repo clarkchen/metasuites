@@ -75,7 +75,7 @@ const renderTransactionHashPhalconLink = async () => {
     const txnHash = href.substring(href.lastIndexOf('/') + 1)
     let targetEl: HTMLElement | null = null
     if (!el.parentElement) return
-    targetEl = el.parentElement.parentElement
+    targetEl = el.parentElement
     if (targetEl && txnHash) {
       appendIconToElement(targetEl, <Icon hash={txnHash} />)
     }

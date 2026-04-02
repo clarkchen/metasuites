@@ -35,10 +35,7 @@ import type {
   Arguments,
   SimulateTxParams
 } from '@common/api/types'
-import {
-  PHALCON_EXPLORER_DOMAIN,
-  PHALCON_FORK_DOMAIN
-} from '@common/config/uri'
+import { BLOCKSEC_DOMAIN } from '@common/config/uri'
 
 import styles from './index.module.less'
 import type {
@@ -358,7 +355,7 @@ const DrawerSimulation: FC<Props> = ({
                 Simulate transactions without signing or on-chain execution,
                 previewing the result. Feature provided by the Phalcon team.{' '}
                 <a
-                  href="https://docs.blocksec.com/phalcon-explorer/user-manual#transaction-simulation"
+                  href="https://docs.blocksec.com/phalcon/phalcon-explorer/simulator"
                   target="_blank"
                 >
                   Manual
@@ -384,7 +381,7 @@ const DrawerSimulation: FC<Props> = ({
         <Button
           className="items-center md-flex"
           type="primary"
-          onClick={() => window.open(PHALCON_EXPLORER_DOMAIN)}
+          onClick={() => window.open(`${BLOCKSEC_DOMAIN}/phalcon/explorer`)}
         >
           <img
             style={{ width: '18px', marginRight: 6 }}
@@ -445,29 +442,7 @@ const DrawerSimulation: FC<Props> = ({
             label="Receiver"
             rules={[
               {
-                required: true,
-                message: (
-                  <span>
-                    The &apos;Receiver&apos; is empty. To deploy a contract, we
-                    recommend you visit the
-                    <a
-                      className="letter-space-lr-1"
-                      href={PHALCON_EXPLORER_DOMAIN}
-                      target="_blank"
-                    >
-                      Phalcon Simulator
-                    </a>
-                    or
-                    <a
-                      className="letter-space-lr-1"
-                      href={PHALCON_FORK_DOMAIN}
-                      target="_blank"
-                    >
-                      Phalcon Fork
-                    </a>
-                    for a superior user experience.
-                  </span>
-                )
+                required: true
               },
               {
                 pattern: PATTERN_EVM_ADDRESS_EXAC,

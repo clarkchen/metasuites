@@ -25,7 +25,6 @@ export const TRONSCAN_PAGE_NAMES = [
 export const BLOCKSCOUT_PAGE_NAMES = ['TX', 'ADDRESS'] as const
 export const MERLINSCAN_PAGE_NAMES = ['TX'] as const
 export const SOLSCAN_PAGE_NAMES = ['ACCOUNT', 'TX', 'TOKEN', 'BLOCK'] as const
-export const SOLANAFM_PAGE_NAMES = ['ADDRESS', 'TX'] as const
 export const SOLANAEXPL_PAGE_NAMES = ['ADDRESS', 'TX'] as const
 export const ARKHAM_PAGE_NAMES = ['ADDRESS', 'TX'] as const
 
@@ -185,23 +184,6 @@ export const SOLSCAN_PAGES: Record<
   }
 }
 
-export const SOLANAFM_PAGES: Record<
-  (typeof SOLANAFM_PAGE_NAMES)[number],
-  {
-    pattern: RegExp
-    name: (typeof SOLANAFM_PAGE_NAMES)[number]
-  }
-> = {
-  ADDRESS: {
-    name: 'ADDRESS',
-    pattern: /^\/address\/([1-9A-HJ-NP-Za-km-z]{32,44})/i
-  },
-  TX: {
-    name: 'TX',
-    pattern: /^\/tx\/([1-9A-Za-z]+)/i
-  }
-}
-
 export const SOLANAEXPL_PAGES: Record<
   (typeof SOLANAEXPL_PAGE_NAMES)[number],
   {
@@ -211,11 +193,11 @@ export const SOLANAEXPL_PAGES: Record<
 > = {
   ADDRESS: {
     name: 'ADDRESS',
-    pattern: /^\/address\/([1-9A-HJ-NP-Za-km-z]{32,44})/i
+    pattern: /^\/address\/([1-9A-HJ-NP-Za-km-z]{32,44})$/i
   },
   TX: {
     name: 'TX',
-    pattern: /^\/tx\/([1-9A-Za-z]+)/i
+    pattern: /^\/tx\/([1-9A-Za-z]+)$/i
   }
 }
 

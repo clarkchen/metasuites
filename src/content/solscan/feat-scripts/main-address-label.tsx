@@ -5,29 +5,18 @@ import $ from 'jquery'
 import { chromeEvent } from '@common/event'
 import type { AddressLabel } from '@common/api/types'
 import { GET_ADDRESS_LABELS } from '@common/constants'
+import { pickSolanaAddress } from '@common/utils'
 
 import { MainAddressLabel } from '../components'
 
 const renderMainAddressLabel = async () => {
-  if ($('#__metadock-main-address-box__').length) return
-  const container = $(
-    '#__next > div:nth-of-type(1) > div:nth-of-type(3) > div:first-child > div:first-child > div:last-child'
-  )
-  const mainAddressEl = container.find(
-    'div:first-child > div:first-child > div'
-  )
-
-  const mainAddress = mainAddressEl.find('>span')?.text().trim()
-
+  const mainAddress = pickSolanaAddress(window.location.pathname)
   if (!mainAddress) return
 
   const labelRootEl = $(
-    '<div id="__metadock-main-address-box__" class="flex items-center flex-wrap gap-2"></div>'
+    '<div id="__metadock-main-address-box__" class="inline-flex items-center flex-wrap gap-2"></div>'
   )
-  labelRootEl.css({
-    marginTop: '24px'
-  })
-  container.append(labelRootEl)
+  $('#__metadock-account-box__').append(labelRootEl)
 
   await chromeEvent
     .emit(GET_ADDRESS_LABELS, {

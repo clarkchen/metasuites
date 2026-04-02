@@ -11,15 +11,13 @@ import {
   LOAD_TRON_APPROVALS,
   TRONSCAN_MULTI_SEARCH,
   URL_UPDATED,
-  GET_SOLSCAN_ACCOUNT_INFO,
-  GET_SOLANAFM_ACCOUNT_INFO,
-  GET_SOLANAFM_ACCOUNT_TRANSFERS,
   GET_SOLSCAN_ACCOUNT_TAB_DATA,
   GET_SOLSCAN_TRANSACTION,
   GET_SOLSCAN_BLOCK_TXS
 } from '@common/constants'
 
 import { initBackgroundRequest } from './listeners'
+import { initTabMessaging, sendOrStore } from './tab-messaging'
 
 /** refresh current page (usually user change the settings) */
 chromeEvent.on(REFRESH, () => {
@@ -28,10 +26,8 @@ chromeEvent.on(REFRESH, () => {
 
 /** url updated (spa) */
 browser.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-  if (changeInfo.url) {
-    if (tabId) {
-      browser.tabs.sendMessage(tabId, URL_UPDATED).catch(() => void 0)
-    }
+  if (changeInfo.url && tabId) {
+    browser.tabs.sendMessage(tabId, URL_UPDATED).catch(() => void 0)
   }
 })
 
@@ -141,25 +137,8 @@ browser.webRequest.onCompleted.addListener(
 browser.webRequest.onCompleted.addListener(
   async details => {
     const { tabId, method } = details
-    if (tabId && method === 'GET') {
-      browser.tabs
-        .sendMessage(tabId, GET_SOLSCAN_ACCOUNT_INFO)
-        .catch(() => void 0)
-    }
-  },
-  {
-    urls: ['https://api.solscan.io/v2/account?*']
-  }
-)
-
-browser.webRequest.onCompleted.addListener(
-  async details => {
-    const { tabId, method } = details
-    if (tabId && method === 'GET') {
-      browser.tabs
-        .sendMessage(tabId, GET_SOLSCAN_ACCOUNT_TAB_DATA)
-        .catch(() => void 0)
-    }
+    if (tabId && method === 'GET')
+      sendOrStore(tabId, GET_SOLSCAN_ACCOUNT_TAB_DATA)
   },
   {
     urls: [
@@ -181,11 +160,7 @@ browser.webRequest.onCompleted.addListener(
 browser.webRequest.onCompleted.addListener(
   async details => {
     const { tabId, method } = details
-    if (tabId && method === 'GET') {
-      browser.tabs
-        .sendMessage(tabId, GET_SOLSCAN_TRANSACTION)
-        .catch(() => void 0)
-    }
+    if (tabId && method === 'GET') sendOrStore(tabId, GET_SOLSCAN_TRANSACTION)
   },
   {
     urls: ['https://api-v2.solscan.io/v2/transaction/detail?tx=*']
@@ -195,41 +170,12 @@ browser.webRequest.onCompleted.addListener(
 browser.webRequest.onCompleted.addListener(
   async details => {
     const { tabId, method } = details
-    if (tabId && method === 'GET') {
-      browser.tabs.sendMessage(tabId, GET_SOLSCAN_BLOCK_TXS).catch(() => void 0)
-    }
+    if (tabId && method === 'GET') sendOrStore(tabId, GET_SOLSCAN_BLOCK_TXS)
   },
   {
     urls: ['https://api.solscan.io/v2/block/txs?*']
   }
 )
 
-browser.webRequest.onCompleted.addListener(
-  async details => {
-    const { tabId, method } = details
-    if (tabId && method === 'POST') {
-      browser.tabs
-        .sendMessage(tabId, GET_SOLANAFM_ACCOUNT_INFO)
-        .catch(() => void 0)
-    }
-  },
-  {
-    urls: ['https://api.solana.fm/v0/accounts/*']
-  }
-)
-
-browser.webRequest.onCompleted.addListener(
-  async details => {
-    const { tabId, method } = details
-    if (tabId && method === 'GET') {
-      browser.tabs
-        .sendMessage(tabId, GET_SOLANAFM_ACCOUNT_TRANSFERS)
-        .catch(() => void 0)
-    }
-  },
-  {
-    urls: ['https://api.solana.fm/v0/accounts/*/transfers?*']
-  }
-)
-
 initBackgroundRequest()
+initTabMessaging()

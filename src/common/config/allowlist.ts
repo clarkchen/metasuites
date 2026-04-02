@@ -1,7 +1,6 @@
 export default {
   ETHERSCAN_V2_MATCHES: [
     '*://opbnb-testnet.bscscan.com/*',
-    '*://ftmscan.com/*',
     '*://cn.etherscan.com/*',
     '*://goto.etherscan.com/*',
     '*://sepolia.etherscan.io/*',
@@ -22,7 +21,6 @@ export default {
     '*://zkevm.polygonscan.com/*',
     '*://*.lineascan.build/*',
     '*://*.wemixscan.com/*',
-    '*://testnet.ftmscan.com/*',
     '*://*.basescan.org/*',
     '*://cronoscan.com/*',
     '*://gnosisscan.io/*',
@@ -40,11 +38,9 @@ export default {
   BLOCKSCOUT_MATCHES: ['*://*.blockscout.com/*'],
   MERLIN_SCAN_MATCHES: ['*://scan.merlinchain.io/*'],
   SOLSCAN_MATCHES: ['*://solscan.io/*'],
-  SOLANAFM_MATCHES: ['*://solana.fm/*'],
   SOLANA_EXPLORER_MATCHES: ['*://explorer.solana.com/*'],
   MS_MATCHES: ['*://*.metasleuth.io/*'],
   DEBANK_MATCHES: ['*://debank.com/*'],
   ARKHAM_MATCHES: ['*://intel.arkm.com/*'],
-  DEX_MATCHES: ['*://dexscreener.com/*'],
   JITO_MATCHES: ['*://explorer.jito.wtf/bundle/*']
 }

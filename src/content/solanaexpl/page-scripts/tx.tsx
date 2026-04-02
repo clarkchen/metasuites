@@ -11,7 +11,7 @@ const initTxPageScript = async () => {
   lazyLoad(() => {
     if (enhancedLabels) renderTxPageAddressLabels()
     if (quick2Parsers) renderAlternativeParsers()
-  }, `body > div.main-content > div:nth-of-type(3) > div > div > span[class*="spinner"]`)
+  }, `div.main-content > div:nth-of-type(3) > div > div > span[class*="spinner"]`)
 }
 
 export default initTxPageScript

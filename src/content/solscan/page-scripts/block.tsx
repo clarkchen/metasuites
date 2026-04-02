@@ -4,7 +4,7 @@ import { store } from '@src/store'
 import { GET_SOLSCAN_BLOCK_TXS } from '@common/constants'
 
 import { renderTransactionHashPhalconLink } from '../feat-scripts'
-import { lazyLoad } from '../helper'
+import { lazyLoad, announceReady } from '../helper'
 
 const initBlockPageScript = async () => {
   const { quick2Parsers } = await store.get('options')
@@ -17,17 +17,26 @@ const initBlockPageScript = async () => {
     false
   )
 
+  const handleBlockTxs = () => {
+    lazyLoad(
+      () => {
+        if (quick2Parsers) renderTransactionHashPhalconLink()
+      },
+      '.animate-pulse',
+      false
+    )
+  }
+
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message === GET_SOLSCAN_BLOCK_TXS) {
-      lazyLoad(
-        () => {
-          if (quick2Parsers) renderTransactionHashPhalconLink()
-        },
-        '.animate-pulse',
-        false
-      )
+      handleBlockTxs()
       sendResponse()
     }
+  })
+
+  const missed = await announceReady()
+  missed.forEach(m => {
+    if (m === GET_SOLSCAN_BLOCK_TXS) handleBlockTxs()
   })
 }
 
