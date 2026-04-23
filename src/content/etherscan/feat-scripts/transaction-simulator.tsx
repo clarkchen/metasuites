@@ -2,10 +2,14 @@ import { createRoot } from 'react-dom/client'
 import $ from 'jquery'
 
 import { pickAddress, isSupportSimulator } from '@common/utils'
+import { EXT_SUPPORT_WEB_LIST } from '@common/constants'
 import { DrawerSimulation } from '@common/components'
 import type { ReadableInputData } from '@common/components/DrawerSimulation/types'
 
 import { SimulateBtn } from '../components'
+
+const ETH_DOMAINS =
+  EXT_SUPPORT_WEB_LIST.find(item => item.chain === 'eth')?.domains ?? []
 
 interface RenderSimulateState {
   chain: string
@@ -14,25 +18,10 @@ interface RenderSimulateState {
   isProxy?: boolean
   signature?: string
   container?: JQuery<HTMLElement>
+  isUpdatedUI?: boolean
 }
 
-const setupInputData = (container?: JQuery<HTMLElement>) => {
-  const newArray: ReadableInputData[] = []
-
-  if (container) {
-    const inputs = container.find('form .form-group input')
-    inputs.each(function () {
-      const argumentName = $(this).siblings('label').text().split(' ')[0]
-      const object = {} as ReadableInputData
-      object.id = $(this).attr('id')!
-      object.name = $(this).attr('name')!
-      object.value = ($(this).val() as string) ?? ''
-      object.dataType = $(this).attr('data-bs-type')!
-      object.dataGrp = $(this).attr('data-bs-grp')
-      object.argumentName = argumentName
-      newArray.push(object)
-    })
-  }
+const processInputArray = (newArray: ReadableInputData[]) => {
   const newCtrl: ReadableInputData[] = []
   const tupleData: string[] = []
   newArray.forEach(item => {
@@ -109,20 +98,57 @@ const setupInputData = (container?: JQuery<HTMLElement>) => {
   )
 }
 
+const setupInputData = (container?: JQuery<HTMLElement>) => {
+  const newArray: ReadableInputData[] = []
+  if (container) {
+    container.find('form .form-group input').each(function () {
+      const object = {} as ReadableInputData
+      object.id = $(this).attr('id')!
+      object.name = $(this).attr('name')!
+      object.value = ($(this).val() as string) ?? ''
+      object.dataType = $(this).attr('data-bs-type')!
+      object.dataGrp = $(this).attr('data-bs-grp')
+      object.argumentName = $(this).siblings('label').text().split(' ')[0]
+      newArray.push(object)
+    })
+  }
+  return processInputArray(newArray)
+}
+
+const setupEthInputData = (container?: JQuery<HTMLElement>) => {
+  const newArray: ReadableInputData[] = []
+  if (container) {
+    container.find('input[data-bs-type]').each(function () {
+      const object = {} as ReadableInputData
+      object.id = $(this).attr('id')!
+      object.name = $(this).attr('name')!
+      object.value = ($(this).val() as string) ?? ''
+      object.dataType = $(this).attr('data-bs-type')!
+      object.dataGrp = $(this).attr('data-bs-grp')
+      object.argumentName = ($(this).attr('placeholder') ?? '').split(' ')[0]
+      newArray.push(object)
+    })
+  }
+  return processInputArray(newArray)
+}
+
 const renderDrawer = ({
   id,
   isProxy = false,
   address,
   chain,
   container,
-  signature
+  signature,
+  isUpdatedUI
 }: RenderSimulateState) => {
   const func = $(`#${id}`).contents().find('#connectStatus').attr('onclick')
   const sender = func ? pickAddress(func) : undefined
 
   const gasPrice = $('#spanGasTooltip .gasPricePlaceHolder').text().trim()
 
-  const readableInputs = setupInputData(container)
+  const readableInputs = isUpdatedUI
+    ? setupEthInputData(container)
+    : setupInputData(container)
 
   const rootEl = $('<div></div>')
   createRoot(rootEl[0]).render(
@@ -162,18 +188,93 @@ const renderUnverifiedSimulateButton = (chain: string, address: string) => {
   )
 }
 
-export const genSimulateBtn = async (chain: string) => {
-  if (!isSupportSimulator(chain)) return
-  const address = pickAddress(window.location.pathname)
-  if (!address) return
+/** Strategy: ETH mainnet (updated page structure) */
+const ethWriteHandler = async (chain: string, address: string) => {
+  const writeContractIframes = $(
+    '#writecontractiframe, #writeproxycontractiframe'
+  )
 
-  const isVerified = !!$('#ContentPlaceHolder1_contractCodeDiv').length
+  writeContractIframes.each(function () {
+    const id = $(this).attr('id')!
+    const isWriteProxy = id === 'writeproxycontractiframe'
+    const implementation = pickAddress(
+      $('#ContentPlaceHolder1_readProxyMessage').find('a').text()
+    )
+    const contract = isWriteProxy ? implementation : address
+    const isProxy = !isWriteProxy && !!implementation
 
-  if (!isVerified) {
-    renderUnverifiedSimulateButton(chain, address)
-    return
-  }
+    const renderSimulateButtons = () => {
+      const headerBtnGroup = $(this).contents().find('#connectStatus').parent()
+      if (headerBtnGroup.length) {
+        const rootEl = document.createElement('span')
+        headerBtnGroup.prepend(rootEl)
+        createRoot(rootEl).render(
+          <SimulateBtn
+            style={{ boxShadow: 'none' }}
+            onClick={() => {
+              renderDrawer({ chain, address, id, isProxy })
+            }}
+          />
+        )
+      }
 
+      $(this)
+        .contents()
+        .find('.accordion-body')
+        .each(function () {
+          const accordionBody = $(this)
+          const accordionEl = accordionBody.closest('.accordion')
+          const clipboardText =
+            accordionEl
+              .find('.js-clipboard[aria-label="Copy Method Name"]')
+              .attr('data-clipboard-text') ?? ''
+          const [, funcName, selector] =
+            clipboardText.match(/(\S+)\s*\((\S+)\)/) ?? []
+          const writeBtnContainer = accordionBody.find('.mt-3')
+          if (!writeBtnContainer.length) return
+          const rootEl = document.createElement('span')
+          writeBtnContainer.find('.write-btn').after(rootEl)
+          createRoot(rootEl).render(
+            <SimulateBtn
+              className="py-2 px-4 ms-2"
+              chain={chain}
+              contract={contract}
+              selector={selector}
+              funcName={funcName}
+              onClick={signature =>
+                renderDrawer({
+                  chain,
+                  address,
+                  id,
+                  isProxy,
+                  signature,
+                  container: accordionEl,
+                  isUpdatedUI: true
+                })
+              }
+            />
+          )
+        })
+    }
+
+    const iframeContentsExist = !!$(this)
+      .contents()
+      .find('#js-write-contract-function-container')
+      .children('.accordion').length
+
+    if (iframeContentsExist) {
+      renderSimulateButtons()
+      return
+    }
+
+    $(this).on('load', async () => {
+      renderSimulateButtons()
+    })
+  })
+}
+
+/** Strategy: other Etherscan-compatible sites (original page structure) */
+const defaultWriteHandler = async (chain: string, address: string) => {
   const writeContractIframes = $(
     '#writecontractiframe, #writeproxycontractiframe'
   )
@@ -252,4 +353,23 @@ export const genSimulateBtn = async (chain: string) => {
       renderSimulateButtons()
     })
   })
+}
+
+export const genSimulateBtn = async (chain: string) => {
+  if (!isSupportSimulator(chain)) return
+  const address = pickAddress(window.location.pathname)
+  if (!address) return
+
+  const isVerified = !!$('#ContentPlaceHolder1_contractCodeDiv').length
+
+  if (!isVerified) {
+    renderUnverifiedSimulateButton(chain, address)
+    return
+  }
+
+  const hostname = window.location.hostname
+  const fn = ETH_DOMAINS.includes(hostname)
+    ? ethWriteHandler
+    : defaultWriteHandler
+  return fn(chain, address)
 }

@@ -1,3 +1,11 @@
+### v5.11.1
+
+- [fix] Adapt private variables feature to updated Etherscan UI
+- [fix] Fix race condition where iframe load event was missed when already complete
+- [fix] Adapt contract variable logs feature to updated Etherscan UI
+- [fix] Adapt transaction simulator feature to updated Etherscan UI
+- [fix] Adapt contract params format feature to updated Etherscan UI
+
 ### v5.11.0
 
 - [fix] Fix explorer.solana.com compatibility

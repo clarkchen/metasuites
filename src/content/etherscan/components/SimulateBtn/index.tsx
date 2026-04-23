@@ -43,7 +43,7 @@ const SimulateBtn: FC<Props> = ({
       chain: _chain,
       funcName
     })
-    onClick(res?.data.sig)
+    onClick(res?.data?.sig)
     setLoading(false)
   }, 500)
 
