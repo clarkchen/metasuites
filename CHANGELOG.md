@@ -1,3 +1,7 @@
+### v5.11.2
+
+- [update] Remove legacy UI fallback now that all Etherscan-compatible sites use the updated UI
+
 ### v5.11.1
 
 - [fix] Adapt private variables feature to updated Etherscan UI

@@ -20,21 +20,46 @@ const FormatParamBtn: FC<Props> = ({ onClick }) => {
 
   return (
     <span
-      className={cls(styles.formatParamBtn, 'btn btn-sm ms-2 mb-2')}
+      className={cls(styles.formatParamBtn, 'btn badge btn-sm')}
+      data-bs-toggle="tooltip"
+      title="Quick format parameters"
       onClick={onFormat}
     >
       {formatted ? (
-        <img
-          className={styles.iconSuccess}
-          src="https://assets.blocksec.com/image/1677842150736-2.png"
-          alt=""
-        />
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.5 5L3.8 7.5L8.5 2"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       ) : (
-        <img
-          className={styles.iconFormat}
-          src="https://assets.blocksec.com/image/1677812164206-2.png"
-          alt=""
-        />
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M2 8.5L5.8 4.7"
+            stroke="white"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+          <path d="M5.8 4.7L7.8 1.5L9 2.7L5.8 4.7Z" fill="white" />
+          <circle cx="1.2" cy="4.5" r="0.9" fill="white" />
+          <circle cx="5" cy="1.2" r="0.9" fill="white" />
+          <circle cx="9" cy="6.5" r="0.9" fill="white" />
+        </svg>
       )}
     </span>
   )

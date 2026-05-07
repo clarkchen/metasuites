@@ -2,12 +2,7 @@ import { createRoot } from 'react-dom/client'
 import $ from 'jquery'
 import { getAddress, isAddress } from 'ethers'
 
-import { EXT_SUPPORT_WEB_LIST } from '@common/constants'
-
-import { FormatParamBtn, EthFormatParamBtn } from '../components'
-
-const ETH_DOMAINS =
-  EXT_SUPPORT_WEB_LIST.find(item => item.chain === 'eth')?.domains ?? []
+import { FormatParamBtn } from '../components'
 
 const formatTuple = (params: string): string => {
   const toArray = (str: string): string => {
@@ -48,8 +43,7 @@ const formatTuple = (params: string): string => {
 
 const renderFormatBtn = (
   input: JQuery<HTMLElement>,
-  insertFn: (rootEl: HTMLElement) => void,
-  isEth = false
+  insertFn: (rootEl: HTMLElement) => void
 ) => {
   const rootEl = document.createElement('span')
   const type = input.attr('data-bs-type')
@@ -63,17 +57,15 @@ const renderFormatBtn = (
     }
   }
   insertFn(rootEl)
-  createRoot(rootEl).render(
-    isEth ? (
-      <EthFormatParamBtn onClick={handleClick} />
-    ) : (
-      <FormatParamBtn onClick={handleClick} />
-    )
-  )
+  createRoot(rootEl).render(<FormatParamBtn onClick={handleClick} />)
 }
 
-/** Strategy: ETH mainnet (updated page structure) */
-const ethFormatHandler = (writeContractIframes: JQuery<HTMLElement>) => {
+/** Quick format parameters */
+const formatWriteContractParams = async () => {
+  const writeContractIframes = $(
+    '#writecontractiframe, #writeproxycontractiframe'
+  )
+
   writeContractIframes.each(function () {
     const renderButtons = () => {
       $(this)
@@ -83,7 +75,7 @@ const ethFormatHandler = (writeContractIframes: JQuery<HTMLElement>) => {
           const input = $(this)
           const label = input.closest('.col-12').find('label').first()
           if (!label.length) return
-          renderFormatBtn(input, rootEl => label.append(rootEl), true)
+          renderFormatBtn(input, rootEl => label.append(rootEl))
         })
     }
 
@@ -101,48 +93,6 @@ const ethFormatHandler = (writeContractIframes: JQuery<HTMLElement>) => {
       renderButtons()
     })
   })
-}
-
-/** Strategy: other Etherscan-compatible sites (original page structure) */
-const defaultFormatHandler = (writeContractIframes: JQuery<HTMLElement>) => {
-  writeContractIframes.each(function () {
-    const renderButtons = () => {
-      $(this)
-        .contents()
-        .find('.collapse .card-body form .form-group input')
-        .each(function () {
-          const input = $(this)
-          input.siblings('br').remove()
-          renderFormatBtn(input, rootEl => input.before(rootEl))
-        })
-    }
-
-    const iframeContentsExist = !!$(this).contents().find('#header').children()
-      .length
-
-    if (iframeContentsExist) {
-      renderButtons()
-      return
-    }
-
-    $(this).on('load', async () => {
-      renderButtons()
-    })
-  })
-}
-
-/** Quick format parameters */
-const formatWriteContractParams = async () => {
-  const writeContractIframes = $(
-    '#writecontractiframe, #writeproxycontractiframe'
-  )
-
-  const hostname = window.location.hostname
-  const handler = ETH_DOMAINS.includes(hostname)
-    ? ethFormatHandler
-    : defaultFormatHandler
-
-  handler(writeContractIframes)
 }
 
 export default formatWriteContractParams

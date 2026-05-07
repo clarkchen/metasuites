@@ -4,11 +4,19 @@ import cls from 'classnames'
 import { TokenSymbol } from '@common/components'
 import type { BaseComponent } from '@common/types'
 
+import styles from './index.module.less'
+
 interface Props extends BaseComponent {
   onClick: (errorCallback: () => void) => void
+  variant?: 'inline' | 'primary'
 }
 
-const ContractVariableLogBtn: FC<Props> = ({ onClick, className, style }) => {
+const ContractVariableLogBtn: FC<Props> = ({
+  onClick,
+  className,
+  style,
+  variant = 'inline'
+}) => {
   const [error, setError] = useState(false)
   const timer = useRef<NodeJS.Timeout>()
 
@@ -22,14 +30,16 @@ const ContractVariableLogBtn: FC<Props> = ({ onClick, className, style }) => {
     })
   }
 
+  const variantClassName =
+    variant === 'primary'
+      ? cls(styles.primary, 'btn btn-sm p-2 px-4')
+      : 'write-btn btn btn-primary border md-btn-primary'
+
   return (
     <>
       <button
         type="button"
-        className={cls(
-          'write-btn btn btn-primary border md-btn-primary',
-          className
-        )}
+        className={cls(variantClassName, className)}
         style={style}
         onClick={handleClick}
       >

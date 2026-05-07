@@ -61,10 +61,7 @@ const ReadContractAccordionItem: FC<Props> = ({
   }
 
   const resizeIframe = () => {
-    const isProxy = window.location.hash === '#readProxyContract'
-    const readContractIframe = $(
-      isProxy ? '#readproxycontractiframe' : '#readcontractiframe'
-    )
+    const readContractIframe = $('#readcontractiframe')
     setTimeout(() => {
       const iframeHeight = readContractIframe.contents().find('body').height()
       if (iframeHeight) {
@@ -100,144 +97,124 @@ const ReadContractAccordionItem: FC<Props> = ({
     return null
   }
 
+  const idx = id.split('-')[1]
+  const label = `${idx}. ${name}`
+  const mutabilityLabel =
+    mutability === ContractVariableMutability.IMMUTABLE
+      ? 'Private Immutable Variable'
+      : 'Private Variable'
+
   return (
-    <div className={cls('card shadow-none mb-3')}>
-      <div className="card-header bg-light card-collapse p-0">
-        <a
-          className="btn btn-link btn-block link-dark text-decoration-none d-flex justify-between align-items-center py-2 collapsed"
+    <div className="accordion-item">
+      <h2 className="accordion-header">
+        <button
+          className="accordion-button bg-white link-dark collapsed"
+          type="button"
           data-bs-toggle="collapse"
+          data-bs-target={`#${id}`}
           aria-expanded="false"
-          href={`#${id}`}
           aria-controls={id}
           onClick={resizeIframe}
         >
-          <div className="items-center md-flex">
-            <span>
-              {id.split('-')[1]}. {name} ({' '}
-            </span>
-            <TokenSymbol size={12} className="mx-1" />
-            <span>
-              Private
-              {mutability === ContractVariableMutability.IMMUTABLE
-                ? ' Immutable '
-                : ' '}
-              Variable )
-            </span>
+          <div className="contract-fn-header d-flex flex-wrap align-items-center justify-content-between gap-2 w-100">
+            <div className="contract-fn-main d-flex flex-wrap align-items-center gap-1">
+              <span className="contract-fn-title small py-1.5 me-1">
+                {label}
+              </span>
+              <span className="d-inline-flex align-items-center gap-1 badge bg-light border border-dark border-opacity-10 text-dark fw-normal py-1.5">
+                <TokenSymbol size={12} />
+                {mutabilityLabel}
+              </span>
+            </div>
+            <div className="contract-fn-actions d-flex align-items-center gap-1">
+              <div className="js-accordion-arrow link-dark transition-all rounded p-1.5 me-n1">
+                <i className="far fa-chevron-up fa-fw fa-sm"></i>
+              </div>
+            </div>
           </div>
-          <span className="accordion-arrow">
-            <i className="fas fa-arrow-down small"></i>
-          </span>
-        </a>
-      </div>
-      <div id={id} className={cls('readContractFunction collapse')}>
-        <div className="card-body p-3">
+        </button>
+      </h2>
+      <div
+        id={id}
+        className="js-read-contract-function accordion-collapse collapse"
+      >
+        <div className="accordion-body bg-light border-top small rounded-bottom-2">
           <form>
             {inputs.length > 0 ? (
               <>
                 <div className="form-group">
-                  <div className="form-group">
-                    {inputs.map((item, index) => (
-                      <div key={index}>
-                        <label>
-                          {item.name} ({item.type})
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control form-control-xs"
-                          placeholder={`  ${item.name} (${item.type})`}
-                          onChange={e =>
-                            setFormData({
-                              ...formData,
-                              [item.id]: e.target.value
-                            })
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    type="button"
-                    id="btn_1"
-                    className="btn btn-xs btn-light border"
-                    onClick={onQuery}
-                  >
-                    Query
-                  </button>
-                  {options.variableLogs && supportVariableLogs && (
-                    <ContractVariableLogBtn
-                      className="ms-2"
-                      onClick={errorCallback => {
-                        const _inputs = inputs.map(i => ({
-                          ...i,
-                          value: formData[i.id]
-                        }))
-                        if (_inputs.findIndex(i => !i.value?.trim()) !== -1) {
-                          return errorCallback()
+                  {inputs.map((item, index) => (
+                    <div key={index} className="mb-2">
+                      <label className="mb-1">
+                        {item.name} ({item.type})
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        placeholder={`${item.name} (${item.type})`}
+                        onChange={e =>
+                          setFormData({
+                            ...formData,
+                            [item.id]: e.target.value
+                          })
                         }
-                        renderModalVariableLogs({
-                          chain,
-                          address,
-                          variableName: name,
-                          implementation: implAddress,
-                          returnType: outputs.map(i => i.type).join(','),
-                          inputs: _inputs
-                        })
-                      }}
-                    />
-                  )}
+                      />
+                    </div>
+                  ))}
+                  <div className="d-flex align-items-center gap-2 mt-2">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-white border-secondary border-opacity-50 p-2 px-4"
+                      onClick={onQuery}
+                    >
+                      Query
+                    </button>
+                    {options.variableLogs && supportVariableLogs && (
+                      <ContractVariableLogBtn
+                        onClick={errorCallback => {
+                          const _inputs = inputs.map(i => ({
+                            ...i,
+                            value: formData[i.id]
+                          }))
+                          if (_inputs.findIndex(i => !i.value?.trim()) !== -1) {
+                            return errorCallback()
+                          }
+                          renderModalVariableLogs({
+                            chain,
+                            address,
+                            variableName: name,
+                            implementation: implAddress,
+                            returnType: outputs.map(i => i.type).join(','),
+                            inputs: _inputs
+                          })
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="my-3">
-                  <img
-                    src="/images/svg/shapes/shape-1.svg"
-                    className="mt-n1"
-                    width="8"
-                  />
-                  <i>
-                    <span className="text-monospace text-muted mx-1">
-                      {outputs.map((o, oIndex) => (
-                        <span key={oIndex}>
-                          <span className="text-secondary me-2">{o.name}</span>
-                          <i>{o.type}</i>
-                          {oIndex !== outputs.length - 1 && (
-                            <span className="text-secondary me-2">,</span>
-                          )}
-                        </span>
-                      ))}
-                    </span>
-                  </i>
-                </div>
-                <div className="text-secondary mt-3">
-                  <span
-                    id="myanswer"
-                    className={cls({ ['text-danger']: errorMsg })}
-                  >
-                    {errorMsg ? (
-                      errorMsg
-                    ) : queryResult ? (
-                      <div className="items-center md-flex">
-                        <br />
-                        {typeof queryResult.value === 'string' ? (
+                {(queryResult || errorMsg) && (
+                  <div className="mt-3">
+                    <span className={cls({ 'text-danger': errorMsg })}>
+                      {errorMsg ? (
+                        errorMsg
+                      ) : queryResult ? (
+                        typeof queryResult.value === 'string' ? (
                           <div>
-                            <strong className="me-2">
-                              {queryResult?.name}
-                            </strong>
-                            <span className="text-monospace text-muted">
-                              <i>{queryResult?.type}</i>
+                            <strong className="me-2">{queryResult.name}</strong>
+                            <span className="text-muted">
+                              <i>{queryResult.type}</i>
                             </span>
                             <b>: </b>
                             {renderValue(queryResult)}
                           </div>
                         ) : (
-                          <div className="mt-4">
+                          <div>
                             <b>[ information method Response ]</b>
                             {queryResult.value.length > 0 ? (
                               queryResult.value.map((v, i) => (
                                 <div key={i} className="mt-2">
-                                  <span className="text-success">
-                                    <i className="fa fa-angle-double-right" />
-                                  </span>
-                                  <strong className="mx-2">{v?.name}</strong>
-                                  <span className="text-monospace text-muted">
+                                  <strong className="me-2">{v?.name}</strong>
+                                  <span className="text-muted">
                                     <i>{v?.type}</i>
                                   </span>
                                   <b>: </b>
@@ -248,22 +225,20 @@ const ReadContractAccordionItem: FC<Props> = ({
                               <div>[ ]</div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    ) : null}
-                  </span>
-                </div>
+                        )
+                      ) : null}
+                    </span>
+                  </div>
+                )}
               </>
             ) : (
               <div>
-                <span className="form-group me-2">{renderValue(value)}</span>
-                <i>
-                  <span className="text-monospace text-muted">
-                    {value?.type}
-                  </span>
-                </i>
+                <span className="me-2">{renderValue(value)}</span>
+                <span className="badge bg-white border text-muted text-nowrap fw-medium py-1 px-1.5">
+                  {value?.type}
+                </span>
                 {options.variableLogs && supportVariableLogs && (
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <ContractVariableLogBtn
                       onClick={() => {
                         renderModalVariableLogs({
