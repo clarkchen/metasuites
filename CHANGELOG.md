@@ -1,3 +1,7 @@
+### v5.11.3
+
+- [update] Update supported chains for Phalcon and MetaSleuth
+
 ### v5.11.2
 
 - [update] Remove legacy UI fallback now that all Etherscan-compatible sites use the updated UI

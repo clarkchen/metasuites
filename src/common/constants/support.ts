@@ -435,10 +435,7 @@ export const SLEUTH_SUPPORT_LIST = [
   'eth',
   'bsc',
   'polygon',
-  'fantom',
   'arbitrum',
-  'cronos',
-  'moonbeam',
   'avalanche',
   'optimism',
   'linea',
@@ -485,11 +482,6 @@ export const PHALCON_SUPPORT_LIST = [
     supportSimulator: true
   },
   {
-    pathname: 'fantom',
-    chain: 'fantom',
-    supportSimulator: false
-  },
-  {
     pathname: 'linea',
     chain: 'linea',
     supportSimulator: false
@@ -497,11 +489,6 @@ export const PHALCON_SUPPORT_LIST = [
   {
     pathname: 'base',
     chain: 'base',
-    supportSimulator: false
-  },
-  {
-    pathname: 'zksync-era',
-    chain: 'era.zksync',
     supportSimulator: false
   },
   {
@@ -515,18 +502,8 @@ export const PHALCON_SUPPORT_LIST = [
     supportSimulator: true
   },
   {
-    pathname: 'sonic',
-    chain: 'sonic',
-    supportSimulator: false
-  },
-  {
     pathname: 'monad',
     chain: 'monad',
-    supportSimulator: false
-  },
-  {
-    pathname: 'monad-testnet',
-    chain: 'test.monad',
     supportSimulator: false
   },
   {
